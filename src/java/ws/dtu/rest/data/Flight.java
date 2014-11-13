@@ -2,15 +2,15 @@ package ws.dtu.rest.data;
 
 @javax.xml.bind.annotation.XmlRootElement()
 public class Flight {
-    private int id;
+    private String id;
     private String name;
    
 
-    public int getNumber() {
+    public String getNumber() {
         return id;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(String number) {
         this.id = number;
     }
 

@@ -26,12 +26,13 @@ public class FligthRessource {
    public FligthRessource(){
        FligthRessource.flight = new Flight();
        FligthRessource.flight.setName("FLY1");
+
    } 
  
    
    @GET
    @Produces(MediaType.APPLICATION_XML)
-   public Flight getStudentXML(@PathParam("id") int id) {
+   public Flight getFlightXML(@PathParam("id") String id) {
         flight.setNumber(id);
         return flight;
     }
@@ -47,7 +48,7 @@ public class FligthRessource {
    @PUT
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
-    public Response setFlight(@PathParam("id") int id, Flight std) {
+    public Response setFlight(@PathParam("id") String id, Flight std) {
         flight = std;
         flight.setNumber(id);
         return Response.ok().entity(flight).build();

@@ -14,6 +14,7 @@ import ws.dtu.rest.data.Flight;
  * Note that this class is only a stub and does not provide a correct implementation
  * of the business logic.
  */
+flight
 @Path("flights")
 public class FlightsResource {
     
