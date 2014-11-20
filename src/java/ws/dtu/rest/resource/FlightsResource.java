@@ -1,14 +1,16 @@
 package ws.dtu.rest.resource;
 
-import java.net.URISyntaxException;
-import javax.ws.rs.Consumes;
+import dtu.ws.group8.lameduck.types.FlightInfoListType;
+import dtu.ws.group8.lameduck.types.FlightInfoType;
+import dtu.ws.group8.lameduck.types.GetFlightRequestType;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import ws.dtu.rest.data.Flight;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 /*
  * Note that this class is only a stub and does not provide a correct implementation
@@ -18,22 +20,43 @@ import ws.dtu.rest.data.Flight;
 @Path("flights")
 public class FlightsResource {
     
-     final static String FLIGHTS_URI = "http://localhost:8080/RestWebService/webresources/flights/";
+     final static String FLIGHTS_URI = "http://localhost:8080/RestWebService/webresources/flights";
+    private List<FlightInfoType> ts;
 
-    @POST
-    @Consumes(MediaType.APPLICATION_XML)
-    public String addFlightXML(Flight st) throws URISyntaxException {
-        String url = FLIGHTS_URI;
-        return url+st.getNumber();
-    }
 
- 
 
     @GET
-    public String findFlight(@QueryParam("name") String name) {
-        String url = FLIGHTS_URI+"123";
-        return url;
+    @Produces(MediaType.TEXT_PLAIN)
+    public  List<FlightInfoType> findFlights() {
+
+
+        GetFlightRequestType input = new GetFlightRequestType();
+        input.setFlightStartAirport("Copenhagen");
+        input.setFlightDestinationAirport("Berlin");
+
+        try {
+            DatatypeFactory df = DatatypeFactory.newInstance();
+            XMLGregorianCalendar dateFlight = df.newXMLGregorianCalendar("2015-01-01");
+            input.setFlightDate(dateFlight);
+        }catch (Exception ex) {
+            System.out.printf("Should not reach this place!!");
+        }
+               
+        FlightInfoListType result = getFlights(input);
+         List<FlightInfoType> flightsInfo =  result.getFlightInformation();
+        
+        return flightsInfo;
     }
 
+
+    
+    
+    
+    
+        private static FlightInfoListType getFlights(dtu.ws.group8.lameduck.types.GetFlightRequestType input) {
+        dtu.ws.group8.lameduck.LameDuckService service = new dtu.ws.group8.lameduck.LameDuckService();
+        dtu.ws.group8.lameduck.LameDuckWSDLPortType port = service.getLameDuckPort();
+        return port.getFlights(input);
+    }
 
 }
