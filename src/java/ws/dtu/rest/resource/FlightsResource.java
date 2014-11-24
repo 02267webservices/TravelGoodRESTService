@@ -20,14 +20,14 @@ import javax.xml.datatype.XMLGregorianCalendar;
 @Path("flights")
 public class FlightsResource {
     
-     final static String FLIGHTS_URI = "http://localhost:8080/RestWebService/webresources/flights";
+    final static String FLIGHTS_URI = "http://localhost:8080/RestWebService/webresources/flights";
     private List<FlightInfoType> ts;
 
 
 
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public  List<FlightInfoType> findFlights() {
+    @Produces(MediaType.TEXT_XML)
+    public  FlightInfoListType findFlights() {
 
 
         GetFlightRequestType input = new GetFlightRequestType();
@@ -43,9 +43,9 @@ public class FlightsResource {
         }
                
         FlightInfoListType result = getFlights(input);
-         List<FlightInfoType> flightsInfo =  result.getFlightInformation();
+       //List<FlightInfoType> flightsInfo =  result.getFlightInformation();
         
-        return flightsInfo;
+        return result;
     }
 
 

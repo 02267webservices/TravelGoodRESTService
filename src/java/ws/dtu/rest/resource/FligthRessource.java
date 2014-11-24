@@ -18,8 +18,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 @Path("flight")
 public class FligthRessource { 
-  static final String FLIGHT_URI = "http://localhost:8080/RestWebService/webresources/flight";
-  
+static final String FLIGHT_URI = "http://localhost:8080/RestWebService/webresources/flight";
+
+ItineraryResource itinerary = new ItineraryResource();
   /* 
   @GET
    @Produces(MediaType.TEXT_PLAIN)
@@ -31,7 +32,7 @@ public class FligthRessource {
    @GET //The simplest GET request returns this 
    public String BookFlight(@QueryParam("bookingnumber") String number){
       boolean result = false;
-               
+    //  itinerary.addFlight();
         ///Call SOAP service
         dtu.ws.group8.lameduck.types.BookFlightRequestType input = new dtu.ws.group8.lameduck.types.BookFlightRequestType();
         input.setFlightBookingNumber(number);
@@ -42,7 +43,7 @@ public class FligthRessource {
       } catch (BookFlightFault ex) {
           Logger.getLogger(FligthRessource.class.getName()).log(Level.SEVERE, null, ex);
       }
-       return ""+result;
+       return ""+result;//+itinerary.getFlights();
    }
    
    
