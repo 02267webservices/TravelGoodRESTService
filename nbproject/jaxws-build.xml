@@ -42,5 +42,21 @@
         <delete dir="${build.generated.sources.dir}/jax-ws/dtu/ws/group8/lameduck"/>
         <delete dir="${build.generated.dir}/jax-wsCache/LameDuckService"/>
     </target>
-    <target name="wsimport-client-generate" depends="wsimport-client-LameDuckService"/>
+    <target name="wsimport-client-HotelReservation" depends="wsimport-init">
+        <mkdir dir="${build.generated.dir}/jax-wsCache/HotelReservation"/>
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/HotelReservation" destdir="${build.generated.dir}/jax-wsCache/HotelReservation" wsdl="${basedir}/${conf-dir}xml-resources/web-service-references/HotelReservation/wsdl/HotelReservation.wsdl" catalog="catalog.xml" extension="true" verbose="true" wsdlLocation="file:/C:/Users/emil/Documents/NetBeansProjects/HotelReservationServicesSOAP/src/java/ws/HotelReservation.wsdl" xnocompile="true" target="2.1">
+            <depends file="${basedir}/${conf-dir}xml-resources/web-service-references/HotelReservation/wsdl/HotelReservation.wsdl"/>
+            <produces dir="${build.generated.dir}/jax-wsCache/HotelReservation"/>
+        </wsimport>
+        <copy todir="${build.generated.sources.dir}/jax-ws">
+            <fileset dir="${build.generated.dir}/jax-wsCache/HotelReservation">
+                <include name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="wsimport-client-clean-HotelReservation" depends="-init-project">
+        <delete dir="${build.generated.sources.dir}/jax-ws/hotelreservationservices"/>
+        <delete dir="${build.generated.dir}/jax-wsCache/HotelReservation"/>
+    </target>
+    <target name="wsimport-client-generate" depends="wsimport-client-LameDuckService, wsimport-client-HotelReservation"/>
 </project>
