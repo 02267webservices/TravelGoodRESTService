@@ -7,6 +7,7 @@ import dtu.ws.group8.lameduck.types.GetFlightRequestType;
 import hotelreservationservices.BookHotelFault;
 import hotelreservationservices.CreditCardType;
 import hotelreservationservices.HotelsType;
+import java.util.ArrayList;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,11 +21,12 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import ws.CancelHotelFault;
 
 
 @Path("itineraries")
 public class ItineraryRessource { 
-
+    public static ArrayList<String> flights = new ArrayList<String>();
  
    @GET //The simplest GET request returns this 
    public String BookFlight(@QueryParam("bookingnumber") String number, 
@@ -48,7 +50,8 @@ public class ItineraryRessource {
       } catch (BookFlightFault ex) {
           Logger.getLogger(ItineraryRessource.class.getName()).log(Level.SEVERE, null, ex);
       }
-       return ""+result;
+        flights.add(number);
+       return ""+result+ " You have now booked " + flights.size() + " Flights";
    }
    
    @Path("hotel")
@@ -69,10 +72,31 @@ public class ItineraryRessource {
            Logger.getLogger(ItineraryRessource.class.getName()).log(Level.SEVERE, null, ex);
        }
       
-        
+        flights.add(number);
        return ""+bookingSuccess;
    }
    
+   @Path("hotel")
+   @DELETE
+   public String cancelHote(@QueryParam("bookingnumber") String number) throws hotelreservationservices.CancelHotelFault{
+       boolean cancelSuccess;
+       int bookingnumber = Integer.parseInt(number);
+       
+        try {
+            cancelSuccess = cancelHotel(bookingnumber);
+            System.out.println("True if cancallation of hotel was succesful: " +cancelSuccess);
+        }catch (Exception ex){
+            
+            System.out.println("Cancellation failed with message: " +ex.getMessage());
+        } 
+             
+       return "";
+   }
+   
+   /*
+   @Path("hotel")
+   @DELETE
+   */
    
   @Path("hotels")
   @GET
@@ -117,9 +141,8 @@ public class ItineraryRessource {
         
         return result;
     }
-   
- 
- 
+  
+ @Path("flight")
  @DELETE
    public String CancelFlight(@QueryParam("bookingnumber") String number) {
        boolean result = false;
@@ -184,6 +207,12 @@ public class ItineraryRessource {
         ws.HotelReservationService service = new ws.HotelReservationService();
         ws.HotelReservationServices port = service.getHotelReservationServicesBindingPort();
         return port.bookHotel(bookingNumber, creditCard);
+    }
+
+    private static boolean cancelHotel(int bookingNumber) throws hotelreservationservices.CancelHotelFault {
+        hotelreservationservices.HotelReservationService service = new hotelreservationservices.HotelReservationService();
+        hotelreservationservices.HotelReservationServices port = service.getHotelReservationServicesBindingPort();
+        return port.cancelHotel(bookingNumber);
     }
   
 
