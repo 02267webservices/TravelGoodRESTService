@@ -8,6 +8,8 @@ import hotelreservationservices.BookHotelFault;
 import hotelreservationservices.CreditCardType;
 import hotelreservationservices.HotelsType;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,11 +24,17 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import ws.CancelHotelFault;
+import ws.dtu.rest.data.MyBean;
+
+import ws.group8.travelgood.ItineraryType;
 
 
 @Path("itineraries")
 public class ItineraryRessource { 
-    public static ArrayList<String> flights = new ArrayList<String>();
+    MyBean bean = new MyBean();
+    
+   
+
  
    @GET //The simplest GET request returns this 
    public String BookFlight(@QueryParam("bookingnumber") String number, 
@@ -35,12 +43,8 @@ public class ItineraryRessource {
    @QueryParam("expdate") String expdate){
    
    CreditCardInfoType cardInfo = getCardInfo(cardnumber,name,expdate);
-       
-   boolean result = false;
-     //itinerary.addFlight();
-      
-      
-        ///Call SOAP service
+    boolean result = false;
+    
         dtu.ws.group8.lameduck.types.BookFlightRequestType input = new dtu.ws.group8.lameduck.types.BookFlightRequestType();
         input.setFlightBookingNumber(number);
         input.setCreditCardInfo(cardInfo);
@@ -50,8 +54,7 @@ public class ItineraryRessource {
       } catch (BookFlightFault ex) {
           Logger.getLogger(ItineraryRessource.class.getName()).log(Level.SEVERE, null, ex);
       }
-        flights.add(number);
-       return ""+result+ " You have now booked " + flights.size() + " Flights";
+       return ""+result;
    }
    
    @Path("hotel")
@@ -72,7 +75,6 @@ public class ItineraryRessource {
            Logger.getLogger(ItineraryRessource.class.getName()).log(Level.SEVERE, null, ex);
        }
       
-        flights.add(number);
        return ""+bookingSuccess;
    }
    
@@ -159,7 +161,30 @@ public class ItineraryRessource {
     
        return ""+result;
    }
-  
+ 
+ @Path("addflight")
+ @PUT
+ public String addflight(@QueryParam("bookingnumber") String number){
+     //flightlist.put(number, "CONFIRMED");
+     
+     return "SUCCESS";
+ }
+ 
+ @Path("getflight")
+ @GET
+ @Produces(MediaType.APPLICATION_XML)
+ public MyBean getBean()
+    {
+        bean.setName("HelloNOT");
+        bean.setMessage("WorldASIF");
+        bean.addToFligthList("Fly1", "Booked");
+        bean.addToFligthList("Fly2", "Booked");
+        bean.getFligtList().put("Fly1", "null");
+        bean.addToHotelList("hotel1", "Booked");
+        bean.addToHotelList("hotel2", "Booked");
+
+        return bean;
+    }
 
    private CreditCardInfoType getCardInfo(String cardnumber, String name, String expdate) {
         CreditCardInfoType cardInfo = new CreditCardInfoType();
