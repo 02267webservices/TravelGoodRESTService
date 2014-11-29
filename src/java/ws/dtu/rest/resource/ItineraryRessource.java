@@ -5,11 +5,6 @@ import dtu.ws.group8.lameduck.types.CreditCardInfoType;
 import dtu.ws.group8.lameduck.types.FlightInfoListType;
 import dtu.ws.group8.lameduck.types.GetFlightRequestType;
 import hotelreservationservices.BookHotelFault;
-import hotelreservationservices.CreditCardType;
-import hotelreservationservices.HotelsType;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,12 +21,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import ws.CancelHotelFault;
 import ws.dtu.rest.data.MyBean;
 
-import ws.group8.travelgood.ItineraryType;
-
 
 @Path("itineraries")
 public class ItineraryRessource { 
-    MyBean bean = new MyBean();
+    private static MyBean Itinerary = new MyBean();
     
    
 
@@ -54,6 +47,12 @@ public class ItineraryRessource {
       } catch (BookFlightFault ex) {
           Logger.getLogger(ItineraryRessource.class.getName()).log(Level.SEVERE, null, ex);
       }
+      if(result){
+         Itinerary.getFligtList().put(number, "CONFIRMED");
+      } else{
+         Itinerary.getFligtList().put(number, "NOT BOOKED");
+
+      }
        return ""+result;
    }
    
@@ -74,26 +73,41 @@ public class ItineraryRessource {
        } catch (ws.BookHotelFault ex) {
            Logger.getLogger(ItineraryRessource.class.getName()).log(Level.SEVERE, null, ex);
        }
-      
+        
+       
+      if(bookingSuccess){ 
+         Itinerary.getHotelList().put(number, "CONFIRMED");
+      } else{
+         Itinerary.getHotelList().put(number, "NOT BOOKED");
+
+      }
        return ""+bookingSuccess;
    }
    
    @Path("hotel")
    @DELETE
-   public String cancelHote(@QueryParam("bookingnumber") String number) throws hotelreservationservices.CancelHotelFault{
-       boolean cancelSuccess;
+   public String cancelHotel(@QueryParam("bookingnumber") String number) throws hotelreservationservices.CancelHotelFault{
        int bookingnumber = Integer.parseInt(number);
-       
+       boolean cancelSuccess = false;
         try {
-            cancelSuccess = cancelHotel(bookingnumber);
-            System.out.println("True if cancallation of hotel was succesful: " +cancelSuccess);
+            cancelSuccess = cancelHotel(2);
+             if(cancelSuccess){ 
+                  Itinerary.getHotelList().put(number, "CANCELLED");
+            } else{
+                  Itinerary.getHotelList().put(number, "NOT CANCELLED"); 
+             }  
+            
+            
+            return ""+cancelSuccess; 
+
         }catch (Exception ex){
             
             System.out.println("Cancellation failed with message: " +ex.getMessage());
         } 
              
-       return "";
-   }
+       
+        return ""+cancelSuccess;
+   } 
    
    /*
    @Path("hotel")
@@ -159,33 +173,53 @@ public class ItineraryRessource {
           Logger.getLogger(ItineraryRessource.class.getName()).log(Level.SEVERE, null, ex);
       }
     
+      if(result){ 
+         Itinerary.getFligtList().put(number, "CANCELLED");
+      } else{
+         Itinerary.getFligtList().put(number, "NOT CANCELLED");
+
+      }
+      
+      
        return ""+result;
    }
  
  @Path("addflight")
  @PUT
+ @Produces(MediaType.APPLICATION_XML)
  public String addflight(@QueryParam("bookingnumber") String number){
-     //flightlist.put(number, "CONFIRMED");
-     
+     Itinerary.addToFligthList(number, "UNCONFIRMED");
      return "SUCCESS";
  }
  
- @Path("getflight")
+ 
+ @Path("addhotel")
+ @PUT
+ @Produces(MediaType.APPLICATION_XML)
+ public String addhotel(@QueryParam("bookingnumber") String number){
+     Itinerary.addToHotelList(number, "UNCONFIRMED");
+     return "SUCCESS";
+ }
+ 
+ @Path("getitinerary")
  @GET
  @Produces(MediaType.APPLICATION_XML)
- public MyBean getBean()
-    {
-        bean.setName("HelloNOT");
-        bean.setMessage("WorldASIF");
-        bean.addToFligthList("Fly1", "Booked");
-        bean.addToFligthList("Fly2", "Booked");
-        bean.getFligtList().put("Fly1", "null");
-        bean.addToHotelList("hotel1", "Booked");
-        bean.addToHotelList("hotel2", "Booked");
-
-        return bean;
+ public MyBean getBean(){    
+     return Itinerary;
     }
 
+ @Path("deleteitinerary")
+ @DELETE
+ public String cancelplanning(){    
+     Itinerary.getFligtList().clear();
+     Itinerary.getHotelList().clear();
+
+     
+     return "Planning cancelled";
+    }
+
+ 
+ 
    private CreditCardInfoType getCardInfo(String cardnumber, String name, String expdate) {
         CreditCardInfoType cardInfo = new CreditCardInfoType();
        // cardInfo.setCardNumber("50408825");
@@ -234,9 +268,9 @@ public class ItineraryRessource {
         return port.bookHotel(bookingNumber, creditCard);
     }
 
-    private static boolean cancelHotel(int bookingNumber) throws hotelreservationservices.CancelHotelFault {
-        hotelreservationservices.HotelReservationService service = new hotelreservationservices.HotelReservationService();
-        hotelreservationservices.HotelReservationServices port = service.getHotelReservationServicesBindingPort();
+    private static boolean cancelHotel(int bookingNumber) throws CancelHotelFault {
+        ws.HotelReservationService service = new ws.HotelReservationService();
+        ws.HotelReservationServices port = service.getHotelReservationServicesBindingPort();
         return port.cancelHotel(bookingNumber);
     }
   

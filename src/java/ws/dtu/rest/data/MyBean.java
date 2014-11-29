@@ -19,28 +19,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 public class MyBean
 {
-    private String name;
-    private String message;
+  
     private Map<String, String> flightlist = new HashMap<String, String>();
     private Map<String, String> hotellist = new HashMap<String, String>();
 
     public MyBean(){
     }
-    
-    public String getName(){
-        return this.name;
-    }
-    
-    public String getMessage(){
-        return this.message;
-    }
-    
-    public void setName(String name){
-        this.name = name;
-    }
-    public void setMessage(String message){
-        this.message = message;
-    }
+   
     
     public Map<String, String> getFligtList(){
         return this.flightlist;
@@ -57,7 +42,7 @@ public class MyBean
      
      @Override
     public String toString(){
-        return name+ " & " + message+ " & " +flightlist.size() + " & " + hotellist.size();
+        return flightlist.size() + " & " + hotellist.size();
     }
     //Constructors and getters/setters here
 }
